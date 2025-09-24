@@ -1,0 +1,9 @@
+# Ignore wav files
+*.wav
+*.onnx
+.DS_Store
+
+# Ignore the cache directory used for Hugging Face models and voices
+cache/
+demo/
+__pycache__/

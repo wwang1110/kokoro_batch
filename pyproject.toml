@@ -1,0 +1,129 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kokoro-tts"
+version = "1.0.0"
+description = "Kokoro TTS - High-performance, license-safe Text-to-Speech service"
+authors = [
+    {name = "Kokoro TTS", email = "wwang1110@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    # Core FastAPI dependencies
+    "pydantic",
+
+    # Audio processing
+    "numpy>=1.21.0",
+    "torch>=2.0.0",
+    
+    
+    # G2P dependencies
+    "misaki[en]==0.9.4",
+    
+    # SpaCy dependencies for NLP processing
+    "spacy==3.8.7",
+    "en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl",
+    
+    # Hugging Face dependencies
+    "huggingface_hub",
+    "transformers",
+
+    "soundfile"
+]
+
+multilingual = [
+    # Optional language support
+    "misaki[ja]==0.9.4",  # Japanese support
+    "misaki[zh]==0.9.4",  # Chinese support
+]
+
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio",
+    "black",
+    "flake8",
+    "mypy",
+]
+
+all = [
+    "kokoro-tts[onnx,multilingual]"
+]
+
+[project.urls]
+Homepage = "https://github.com/wwang1110/kokoro_batch/tree/main/kokoro"
+
+[project.scripts]
+kokoro-server = "Demo:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["kokoro", "tts_components"]
+
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+  | cache
+)/
+'''
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["kokoro_server", "kokoro_onnx"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]

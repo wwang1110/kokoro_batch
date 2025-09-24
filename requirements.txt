@@ -1,0 +1,19 @@
+# TTS Service Requirements - Integrated G2P Dependencies
+# This service now includes integrated G2P functionality
+
+# Core FastAPI dependencies
+pydantic
+
+# Audio processing
+numpy>=1.21.0
+torch>=2.0.0
+
+# G2P dependencies (previously in separate service)
+misaki[en]==0.9.4
+
+# Optional language support (uncomment if needed)
+# misaki[ja]==0.9.4  # Japanese support
+# misaki[zh]==0.9.4  # Chinese support
+
+huggingface_hub
+transformers
