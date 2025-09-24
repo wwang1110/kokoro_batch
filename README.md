@@ -26,3 +26,22 @@ This project provides a text-to-speech (TTS) pipeline capable of processing mult
 3.  **Run the demo:**
     ```bash
     python demo.py
+
+## Performance
+
+Test results with `max_token=50` and `batch_size=32` on `RTX4090`:
+
+```
+INFO:tts_components.integrated_g2p:Batch processed 30 items, 30 successful
+INFO:root:Source generation duration: 0.0451s
+INFO:root:STFT processing duration: 0.0692s
+INFO:root:Upsample 0 duration: 0.0135s
+INFO:root:Noise processing 0 duration: 0.0311s
+INFO:root:Resblocks 0 duration: 0.0256s
+INFO:root:Upsample 1 duration: 0.0119s
+INFO:root:Noise processing 1 duration: 0.0187s
+INFO:root:Resblocks 1 duration: 0.2484s
+INFO:root:Final processing and inverse STFT duration: 1.1648s
+INFO:root:Total forward pass duration: 1.6319s
+INFO:__main__:Total audio duration: 276.15 seconds.
+```
