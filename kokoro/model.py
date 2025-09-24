@@ -108,12 +108,12 @@ class KModel(torch.nn.Module):
             # Predict the fundamental frequency (F0) and noise components for each frame
             F0_pred, N_pred = self.predictor.F0Ntrain(en , s, seq_lengths, updated_frame_mask)
 
-            # Generate a mel-spectrogram or a similar intermediate representation
-            mel = self.decoder(asr, F0_pred, N_pred, ref_s[:, :128], updated_frame_mask)
+            # Generate a mel-spectrogram similar intermediate representation (b, 512, l), will be upsampled to (b, 128, l*upsample_scale)
+            m = self.decoder(asr, F0_pred, N_pred, ref_s[:, :128], updated_frame_mask)
 
             # Converts the intermediate representation(mel-spectrogram) into the final raw audio waveform.
             updated_frame_mask = F.interpolate(updated_frame_mask.unsqueeze(1), scale_factor=2, mode='nearest').squeeze(1)
-            audio = self.decoder.generator(mel, ref_s[:, :128], F0_pred.squeeze(1), updated_frame_mask).squeeze(1)
+            audio = self.decoder.generator(m, ref_s[:, :128], F0_pred.squeeze(1), updated_frame_mask).squeeze(1)
             audio = (audio * 32767).to(torch.int16)
             frame_lengths = (seq_lengths * (audio.shape[-1]//max_frames)).long()
 
