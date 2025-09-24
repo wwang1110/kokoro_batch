@@ -43,11 +43,13 @@ dependencies = [
     "soundfile"
 ]
 
-multilingual = [
-    # Optional language support
-    "misaki[ja]==0.9.4",  # Japanese support
-    "misaki[zh]==0.9.4",  # Chinese support
-]
+[tool.uv.sources]
+torch = { index = "pytorch-cu128" }
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
 
 dev = [
     "pytest>=7.0.0",
@@ -105,14 +107,6 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 asyncio_mode = "auto"
 addopts = "-v --tb=short"
-
-[tool.coverage.run]
-source = ["kokoro_server", "kokoro_onnx"]
-omit = [
-    "*/tests/*",
-    "*/test_*",
-    "*/__pycache__/*",
-]
 
 [tool.coverage.report]
 exclude_lines = [
