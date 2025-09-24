@@ -19,8 +19,8 @@ async def main():
     # Comprehensive test cases
     test_data = [
         {"text": "Hello World", "voice": "af_heart", "speed": 1.0, "language": "en-US"},
-        {"text": "Climate change is a pressing global issue that requires immediate and concerted efforts from all nations to mitigate its long-term consequences.", "voice": "bf_emma", "speed": 0.95, "language": "en-US"},
-        {"text": "The study of quantum mechanics reveals a fascinating and often counterintuitive world, where particles can exist in multiple states simultaneously.", "voice": "af_heart", "speed": 1.0, "language": "en-US"},
+        {"text": "Climate change is a pressing global issue that requires immediate and concerted efforts from all nations to mitigate its long-term consequences.", "voice": "bf_emma", "speed": 0.95, "language": "en-GB"},
+        {"text": "The study of quantum mechanics reveals a fascinating and often counterintuitive world, where particles can exist in multiple states simultaneously.", "voice": "am_adam", "speed": 1.0, "language": "en-US"},
         {"text": "Exploring the depths of the ocean, scientists continue to discover new species and ecosystems that challenge our understanding of life on Earth.", "voice": "am_eric", "speed": 1.05, "language": "en-US"},
         {"text": "The history of human civilization is a rich tapestry of cultures, innovations, and conflicts that have shaped the world we live in today.", "voice": "af_jessica", "speed": 1.0, "language": "en-US"},
         {"text": "In the realm of astrophysics, the search for extraterrestrial life remains a captivating endeavor, driving the development of powerful new telescopes and observation techniques.", "voice": "am_adam", "speed": 0.9, "language": "en-US"},
@@ -49,16 +49,28 @@ async def main():
         {"text": "The exploration of the human psyche, from the conscious mind to the depths of the unconscious, has been a central theme in psychology, philosophy, and the arts.", "voice": "am_eric", "speed": 1.0, "language": "en-US"},
         {"text": "The future of work is likely to be shaped by automation, artificial intelligence, and the gig economy, requiring individuals and organizations to adapt to new ways of learning and collaborating.", "voice": "af_jessica", "speed": 1.0, "language": "en-US"}
     ]
-    #test_data = test_data[:3]  # Limit to first 3 for quicker demo
+    test_data = test_data[:3]  # Limit to first 3 for quicker demo
     
+    # create demo directory if not exists
+    import os
+    if not os.path.exists("demo"):
+        os.makedirs("demo")
+
     text_chunks = []
     logger.info("Splitting texts into chunks...")
     for i, item in enumerate(test_data):
         # Use batch_split to break text into optimal chunks
-        text_chunks.extend(pipeline.simple_smart_split(
+        r = pipeline.simple_smart_split(
             item["text"],
             config.kokoro_max_tokens_per_chunk
-        ))
+        )
+        for chunk in r:
+            text_chunks.append({
+                "text": chunk,
+                "voice": item["voice"],
+                "speed": item["speed"],
+                "language": item["language"]
+            })
 
     batches = []
     for i in range(0, len(text_chunks), config.kokoro_max_batch_size):
@@ -69,7 +81,7 @@ async def main():
     for batch in batches:
     
         # Convert all text chunks to G2PItem objects for processing
-        g2p_items = [G2PItem(text=chunk, language=item["language"]) for chunk in batch]
+        g2p_items = [G2PItem(text=chunk["text"], language=chunk["language"]) for chunk in batch]
 
         # Convert all text chunks in batch to phonemes using integrated G2P
         phonemes_list = pipeline.text_to_phonemes(g2p_items)
@@ -77,8 +89,8 @@ async def main():
         start_time = time.time()
         audio_tensors = pipeline.from_phonemes(
             phonemes=phonemes_list,  
-            voices=[item["voice"]] * len(phonemes_list),  
-            speeds=[item["speed"]] * len(phonemes_list)
+            voices=[chunk["voice"] for chunk in batch],  
+            speeds=[chunk["speed"] for chunk in batch]
         )
         durs.append(time.time() - start_time)
         logger.info(f"Batch of {len(batch)} chunks processed in {time.time() - start_time:.2f} seconds.")
