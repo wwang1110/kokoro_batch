@@ -49,7 +49,7 @@ async def main():
         {"text": "The exploration of the human psyche, from the conscious mind to the depths of the unconscious, has been a central theme in psychology, philosophy, and the arts.", "voice": "am_eric", "speed": 1.0, "language": "en-US"},
         {"text": "The future of work is likely to be shaped by automation, artificial intelligence, and the gig economy, requiring individuals and organizations to adapt to new ways of learning and collaborating.", "voice": "af_jessica", "speed": 1.0, "language": "en-US"}
     ]
-    test_data = test_data[:3]  # Limit to first 3 for quicker demo
+    #test_data = test_data[:3]  # Limit to first 3 for quicker demo
     
     # create demo directory if not exists
     import os
