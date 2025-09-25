@@ -140,10 +140,11 @@ class KPipeline:
         voices: list[str],
         speeds: list[float]
     ) -> torch.FloatTensor:
-        if len(phonemes) > 510:
-            raise ValueError(f'Phoneme string too long: {len(phonemes)} > 510')
-
         input_ids, input_lengths, voice_packs, speeds = self.prepare_params(phonemes, voices, speeds)
+        max_len = input_lengths.max().item()
+        if max_len > 510:
+            raise ValueError(f'Input sequence too long: {max_len} > 510')
+
         output, lengths = self.model(input_ids, input_lengths, voice_packs, speeds)
 
         # Trims the padding from each audio clip in the batch to match the original lengths
