@@ -29,7 +29,7 @@ This project provides a text-to-speech (TTS) pipeline capable of processing mult
 
 ## Performance
 
-Test results with `max_token=50` and `batch_size=32` on `RTX4090`:
+Test results with `max_chars=200` and `batch_size=32` on `RTX4090`:
 
 ```
 INFO:tts_components.integrated_g2p:Batch processed 30 items, 30 successful

@@ -4,14 +4,11 @@ from typing import List
 
 logger = logging.getLogger(__name__)
 
-def simple_smart_split(text: str, max_tokens: int) -> List[str]:
+def simple_smart_split(text: str, max_chars: int) -> List[str]:
 
     if not text.strip():
         return []
 
-    # Simple approximation: 1 token ≈ 4 characters
-    max_chars = max_tokens * 4
-    
     # Split text into sentences at sentence boundaries, discarding the delimiters.
     sentences = re.split(r'[,.!?;:]\s*', text.strip())
     sentences = [s.strip() for s in sentences if s.strip()]
@@ -69,8 +66,8 @@ def simple_smart_split(text: str, max_tokens: int) -> List[str]:
         
     return chunks
 
-def batch_split(text: str, max_tokens: int, batch_size: int) -> List[List[str]]:
-    chunks = simple_smart_split(text, max_tokens)
+def batch_split(text: str, max_chars: int, batch_size: int) -> List[List[str]]:
+    chunks = simple_smart_split(text, max_chars)
     if not chunks:
         return []
 

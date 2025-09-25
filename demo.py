@@ -62,7 +62,7 @@ async def main():
         # Use batch_split to break text into optimal chunks
         r = pipeline.simple_smart_split(
             item["text"],
-            config.kokoro_max_tokens_per_chunk
+            config.kokoro_max_chars_per_chunk
         )
         for chunk in r:
             text_chunks.append({
@@ -75,6 +75,10 @@ async def main():
     batches = []
     for i in range(0, len(text_chunks), config.kokoro_max_batch_size):
         batches.append(text_chunks[i:i + config.kokoro_max_batch_size])
+    logger.info(f"Total {len(text_chunks)} chunks split into {len(batches)} batches.")
+
+    pipeline.warmup()
+    logger.info("warmup complete.")
 
     count = 0
     durs = []
@@ -105,7 +109,6 @@ async def main():
             sf.write(output_file, audio.numpy(), 24000)
 
             count += 1
-        break
 
     logger.info(f"Total inference time for {count} chunks: {sum(durs):.2f} seconds.")
     total_audio_dur = sum([len(sf.read(f"demo/demo_output_{i}.wav")[0]) / 24000 for i in range(count)])

@@ -108,8 +108,8 @@ class KPipeline:
         except Exception as e:
             raise RuntimeError(f"Integrated G2P conversion failed: {e}")
 
-    def simple_smart_split(self, text: str, max_tokens: int) -> List[str]:
-        return simple_smart_split(text, max_tokens)
+    def simple_smart_split(self, text: str, max_chars: int) -> List[str]:
+        return simple_smart_split(text, max_chars)
 
     def prepare_params(
         self,
@@ -150,3 +150,11 @@ class KPipeline:
         # Trims the padding from each audio clip in the batch to match the original lengths
         audio = [a[:l].cpu() for a, l in zip(output, lengths)]
         return audio
+    
+    def warmup(self):
+        # Warmup the model with dummy data
+        dummy_phonemes = ["a i u e o"] * 2
+        dummy_voices = ["af_nicole"] * 2
+        dummy_speeds = [1.0] * 2
+        self.from_phonemes(dummy_phonemes, dummy_voices, dummy_speeds)
+        logger.info("Model warmup complete.")
